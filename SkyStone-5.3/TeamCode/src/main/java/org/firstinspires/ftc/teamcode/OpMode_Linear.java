@@ -140,7 +140,7 @@ public class OpMode_Linear extends LinearOpMode {
             if (gamepad1.a && clamp.getPosition() != 0.5)
                 clamp.setPosition(0.5);
             else if (gamepad1.a && clamp.getPosition() != 0.0)
-                clamp.setPosition(0);
+                clamp.setPosition(0.0);
 
 
 
