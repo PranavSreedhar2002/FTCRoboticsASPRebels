@@ -63,8 +63,7 @@ public class OpMode_Linear extends LinearOpMode {
     public DcMotor leftBackMotor;
     public DcMotor rightSlide;
     public DcMotor leftSlide;
-    public Servo leftClamp;
-    public Servo rightClamp;
+    public Servo clamp;
 
     @Override
     public void runOpMode() {
@@ -82,8 +81,7 @@ public class OpMode_Linear extends LinearOpMode {
         leftBackMotor = hardwareMap.get(DcMotor.class, "left_back");
         rightSlide  = hardwareMap.get(DcMotor.class, "right_slide");
         leftSlide = hardwareMap.get(DcMotor.class, "left_slide");
-        leftClamp = hardwareMap.get(Servo.class, "left_clamp");
-        rightClamp = hardwareMap.get(Servo.class, "right_clamp");
+        clamp = hardwareMap.get(Servo.class, "left_clamp");
 
 
 
@@ -137,6 +135,15 @@ public class OpMode_Linear extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.update();
+
+            // clamp
+            if (gamepad1.a && clamp.getPosition() != 0.5)
+                clamp.setPosition(0.5);
+            else if (gamepad1.a && clamp.getPosition() != 0.0)
+                clamp.setPosition(0);
+
+
+
         }
     }
 }
