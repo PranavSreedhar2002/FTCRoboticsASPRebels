@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -134,6 +135,15 @@ public class SkystoneIdentificationSample extends LinearOpMode {
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
+
+    //Motors
+    DcMotor left_front;
+    DcMotor left_back;
+    DcMotor right_front;
+    DcMotor right_back;
+    double G1rightStickY = 0;
+    double G1leftStickY = 0;
+
 
     @Override public void runOpMode() {
         /*
@@ -318,11 +328,18 @@ public class SkystoneIdentificationSample extends LinearOpMode {
         targetsSkyStone.activate();
 
         //Turn the flash on
-        com.vuforia.CameraDevice.getInstance().setFlashTorchMode(true);
+        com.vuforia.CameraDevice.getInstance().setFlashTorchMode(false);
 
         //Set zoom of the camera
         com.vuforia.CameraDevice.getInstance().setField("opti-zoom", "opti-zoom-on");
         com.vuforia.CameraDevice.getInstance().setField("zoom", "30");
+
+        //initialize motors and stuff
+        left_front = hardwareMap.dcMotor.get("left_front");
+        left_back = hardwareMap.dcMotor.get("left_back");
+        right_front = hardwareMap.dcMotor.get("right_front");
+        right_back = hardwareMap.dcMotor.get("right_back");
+
 
         while (!isStopRequested()) {
 
@@ -373,6 +390,14 @@ public class SkystoneIdentificationSample extends LinearOpMode {
             }
             telemetry.addData("Skystone Position", positionSkystone);
             telemetry.update();
+
+            //controller setting
+            G1rightStickY = -gamepad1.right_stick_y;
+            G1leftStickY = -gamepad1.left_stick_y;
+            right_front.setPower(-G1rightStickY);
+            right_back.setPower(-G1rightStickY);
+            left_front.setPower(G1leftStickY);
+            left_back.setPower(G1leftStickY);
         }
 
         // Disable Tracking when we are done;

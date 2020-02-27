@@ -17,6 +17,9 @@ public class DriverControlledOpMode extends OpMode {
 
     @Override
     public void init() {
+
+
+
         left_front = hardwareMap.dcMotor.get("left_front");
         left_back = hardwareMap.dcMotor.get("left_back");
         right_front = hardwareMap.dcMotor.get("right_front");
@@ -37,6 +40,7 @@ public class DriverControlledOpMode extends OpMode {
         right_back.setPower(-G1rightStickY);
         left_front.setPower(G1leftStickY);
         left_back.setPower(G1leftStickY);
+
     }
 
     @Override
