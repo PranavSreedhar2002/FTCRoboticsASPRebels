@@ -27,14 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -63,6 +64,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  *
  * From the Audience perspective, the Red Alliance station is on the right and the
  * Blue Alliance Station is on the left.
+
  * Eight perimeter targets are distributed evenly around the four perimeter walls
  * Four Bridge targets are located on the bridge uprights.
  * Refer to the Field Setup manual for more specific location details
@@ -82,8 +84,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 
-@TeleOp(name="SKYSTONE Vuforia Nav", group ="Concept")
-public class SkystoneIdentificationSample extends LinearOpMode {
+@Autonomous(name="SKYSTONE Vuforia Nav", group ="Concept")
+
+public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
 
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
@@ -107,7 +110,7 @@ public class SkystoneIdentificationSample extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            "AboXNav/////AAABmeGOS7NozU5qnTs51UZZ17g1BcHElTpLG7nsEbYufdDfWLm+ZbdqBWX7hOXxoHiu9tzNUQI4PIsRb96x9UHLizYXL8ZzqsCRKqmHx6iiGL81vuTLUyZ3yTybJ5AENkTY8h7YrKSJZnvS7W3V4EoZFxXRe4mEhxxWYsYSlBx6MEX7m9RAet8LGIf35OjCd5wzC/tSGMs+RGx+4tU+aCQkytnoaPcnEGzzt9nLu/0DypuJFc2pI+FuwGw0Y52PbDBrnb/cw+SLSRYGbYavN77to3eguAn7rG8vN0W0RrYYvkWxiRh1HY0WWtew91WaN4+hmkwWRoEFmC6CAt3kAzg1NSQWpRGXNreOlMqOf8Dr+H8j";
+            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
@@ -135,15 +138,6 @@ public class SkystoneIdentificationSample extends LinearOpMode {
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
-
-    //Motors
-    DcMotor left_front;
-    DcMotor left_back;
-    DcMotor right_front;
-    DcMotor right_back;
-    double G1rightStickY = 0;
-    double G1leftStickY = 0;
-
 
     @Override public void runOpMode() {
         /*
@@ -326,21 +320,6 @@ public class SkystoneIdentificationSample extends LinearOpMode {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
-
-        //Turn the flash on
-        com.vuforia.CameraDevice.getInstance().setFlashTorchMode(false);
-
-        //Set zoom of the camera
-        com.vuforia.CameraDevice.getInstance().setField("opti-zoom", "opti-zoom-on");
-        com.vuforia.CameraDevice.getInstance().setField("zoom", "30");
-
-        //initialize motors and stuff
-        left_front = hardwareMap.dcMotor.get("left_front");
-        left_back = hardwareMap.dcMotor.get("left_back");
-        right_front = hardwareMap.dcMotor.get("right_front");
-        right_back = hardwareMap.dcMotor.get("right_back");
-
-
         while (!isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.
@@ -348,11 +327,6 @@ public class SkystoneIdentificationSample extends LinearOpMode {
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
-
-                    if(trackable.getName().equals("Stone Target")){
-                        telemetry.addLine("Stone Target Is Visible");
-                    }
-
                     targetVisible = true;
 
                     // getUpdatedRobotLocation() will return null if no new information is available since
@@ -366,38 +340,20 @@ public class SkystoneIdentificationSample extends LinearOpMode {
             }
 
             // Provide feedback as to where the robot is located (if we know).
-            String positionSkystone = "";
             if (targetVisible) {
                 // express position (translation) of robot in inches.
                 VectorF translation = lastLocation.getTranslation();
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
-                double xPosition = translation.get(0);
-                if(xPosition < -10){
-                    positionSkystone = "left";
-                }else{
-                    positionSkystone = "center";
-                }
-
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
             }
             else {
-                positionSkystone = "right";
                 telemetry.addData("Visible Target", "none");
             }
-            telemetry.addData("Skystone Position", positionSkystone);
             telemetry.update();
-
-            //controller setting
-            G1rightStickY = -gamepad1.right_stick_y;
-            G1leftStickY = -gamepad1.left_stick_y;
-            right_front.setPower(-G1rightStickY);
-            right_back.setPower(-G1rightStickY);
-            left_front.setPower(G1leftStickY);
-            left_back.setPower(G1leftStickY);
         }
 
         // Disable Tracking when we are done;
